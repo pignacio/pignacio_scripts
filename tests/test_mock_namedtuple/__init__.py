@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # pylint: disable=invalid-name
 from __future__ import absolute_import, unicode_literals
@@ -7,15 +7,32 @@ import collections
 import logging
 
 from nose.tools import eq_, raises
+from mock import Mock, patch
 
-from scripts.mock_namedtuple import mock_namedtuple, UnmockedField
+from scripts.mock_namedtuple import mock_namedtuple, mock_namedtuple_class
+from scripts.sentinels import Sentinels
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 NamedTuple = collections.namedtuple("NamedTuple", ['a', 'b', 'c'])
-MockTuple = mock_namedtuple(NamedTuple)
+MockTuple = mock_namedtuple_class(NamedTuple)
+
+
+@patch('scripts.mock_namedtuple.mock_namedtuple_class')
+def mock_nt_delegates_to_mock_nt_class_test(mock_nt_class_mock):
+    sentinels = Sentinels()
+
+    tuple_class_mock = Mock()
+    tuple_class_mock.return_value = sentinels.tuple
+    mock_nt_class_mock.return_value = tuple_class_mock
+
+    namedtuple = mock_namedtuple(sentinels.tuple_cls, key=sentinels.kwarg)
+
+    mock_nt_class_mock.assert_called_once_with(sentinels.tuple_cls)
+    tuple_class_mock.assert_called_once_with(key=sentinels.kwarg)
+    eq_(namedtuple, sentinels.tuple)
 
 
 def fields_are_correctly_inited_test():
@@ -25,7 +42,7 @@ def fields_are_correctly_inited_test():
     eq_(MockTuple(b=7).b, 7)
 
 
-@raises(UnmockedField)
+@raises(AttributeError)
 def cannot_access_unmocked_fields_test():
     MockTuple(a=3).b
 
@@ -40,7 +57,7 @@ def mocked_fields_cannot_be_set_test():
     MockTuple(a=3).a = 5
 
 
-@raises(UnmockedField, AttributeError)
+@raises(AttributeError)
 def unmocked_field_cannot_be_set_test():
     MockTuple().a = 1
 
