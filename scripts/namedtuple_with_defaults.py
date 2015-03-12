@@ -17,16 +17,23 @@ def namedtuple_with_defaults(tuple_name, fields, defaults=None):
         __defaults = defaults
 
         def __new__(cls, *args, **kwargs):
+            if len(args) > len(tuple_class._fields):
+                raise ValueError('Too many arguments for namedtuple: got {} '
+                                 'instead of {}'
+                                 .format(len(args), len(tuple_class._fields)))
             defaults = cls._get_defaults()
             fields_in_args = set(tuple_class._fields[:len(args)])
-            kwvalues = {f: cls.__get_value(f, kwargs, defaults)
+            kwvalues = {f: cls.__extract_value(f, kwargs, defaults)
                         for f in tuple_class._fields if f not in fields_in_args}
+            if kwargs:
+                raise ValueError('Unexpected argument for namedtuple: {}'
+                                 .format(kwargs.popitem()[0]))
             return tuple_class.__new__(cls, *args, **kwvalues)  # pylint: disable=star-args
 
         @staticmethod
-        def __get_value(key, kwargs, defaults):
+        def __extract_value(key, kwargs, defaults):
             try:
-                return kwargs[key]
+                return kwargs.pop(key)
             except KeyError:
                 try:
                     return defaults[key]

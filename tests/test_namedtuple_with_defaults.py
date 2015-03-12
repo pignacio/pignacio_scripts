@@ -52,9 +52,21 @@ class NamedtupleWithDefaultsTest(TestCase):
         eq_(value.b, sentinel.b_default)
         eq_(value.c, sentinel.c)
 
-    @raises(ValueError)
     def test_missing_arg_fails(self):
-        self.tuple_class(sentinel.a, sentinel.c)
+        self.assertRaisesRegexp(ValueError, 'Missing argument for namedtuple',
+                                self.tuple_class, sentinel.a, sentinel.b)
+
+    def test_extra_kwargs_fails(self):
+        self.assertRaisesRegexp(
+            ValueError, 'Unexpected argument for namedtuple',
+            self.tuple_class,
+            a=sentinel.a, b=sentinel.b, c=sentinel.c, d=sentinel.d)
+
+    def test_extra_args_fails(self):
+        self.assertRaisesRegexp(
+            ValueError, 'Too many arguments for namedtuple',
+            self.tuple_class,
+            sentinel.a, sentinel.b, sentinel.c, sentinel.d)
 
 
 class GetDefaultsTest(TestCase):
