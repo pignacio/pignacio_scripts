@@ -7,10 +7,9 @@ import collections
 import logging
 
 from nose.tools import eq_, raises
-from mock import Mock, patch
+from mock import Mock, patch, sentinel
 
 from scripts.mock_namedtuple import mock_namedtuple, mock_namedtuple_class
-from scripts.sentinels import Sentinels
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -22,17 +21,15 @@ MockTuple = mock_namedtuple_class(NamedTuple)
 
 @patch('scripts.mock_namedtuple.mock_namedtuple_class')
 def mock_nt_delegates_to_mock_nt_class_test(mock_nt_class_mock):
-    sentinels = Sentinels()
-
     tuple_class_mock = Mock()
-    tuple_class_mock.return_value = sentinels.tuple
+    tuple_class_mock.return_value = sentinel.tuple
     mock_nt_class_mock.return_value = tuple_class_mock
 
-    namedtuple = mock_namedtuple(sentinels.tuple_cls, key=sentinels.kwarg)
+    namedtuple = mock_namedtuple(sentinel.tuple_cls, key=sentinel.kwarg)
 
-    mock_nt_class_mock.assert_called_once_with(sentinels.tuple_cls)
-    tuple_class_mock.assert_called_once_with(key=sentinels.kwarg)
-    eq_(namedtuple, sentinels.tuple)
+    mock_nt_class_mock.assert_called_once_with(sentinel.tuple_cls)
+    tuple_class_mock.assert_called_once_with(key=sentinel.kwarg)
+    eq_(namedtuple, sentinel.tuple)
 
 
 def fields_are_correctly_inited_test():
