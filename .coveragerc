@@ -3,6 +3,8 @@ exclude_lines =
     raise NotImplementedError()
 
 include = scripts/*
-exclude = scripts/pylint_extra/*
+omit = scripts/pylint_extra/*
+
 show_missing = True
 precision = 2
+
