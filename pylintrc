@@ -19,7 +19,7 @@ persistent=yes
 
 # List of plugins (as comma separated values of python modules names) to load,
 # usually to register additional checkers.
-load-plugins=scripts.pylint_extra
+load-plugins=pignacio_scripts.pylint_extra
 
 # Use multiple processes to speed up Pylint.
 jobs=1

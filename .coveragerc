@@ -2,8 +2,8 @@
 exclude_lines =
     raise NotImplementedError()
 
-include = scripts/*
-omit = scripts/pylint_extra/*
+include = pignacio_scripts/*
+omit = pignacio_scripts/pylint_extra/*
 
 show_missing = True
 precision = 2

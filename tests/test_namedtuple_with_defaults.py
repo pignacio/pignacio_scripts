@@ -8,13 +8,13 @@ import logging
 from mock import patch, sentinel
 from nose.tools import eq_, ok_, raises
 
-from scripts.namedtuple_with_defaults import namedtuple_with_defaults
+from pignacio_scripts.namedtuple_with_defaults import namedtuple_with_defaults
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-@patch('scripts.namedtuple_with_defaults.collections.namedtuple')
+@patch('pignacio_scripts.namedtuple_with_defaults.collections.namedtuple')
 def test_nt_with_defs_delegates_to_nt(nt_mock):
     class NTClass(object):  # pylint: disable=too-few-public-methods
         pass
