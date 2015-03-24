@@ -1,6 +1,5 @@
 [run]
 
-omit = pignacio_scripts/pylint_extra/*
 
 
 [report]
@@ -10,3 +9,5 @@ exclude_lines =
 show_missing = True
 precision = 2
 
+include = pignacio_scripts/*
+omit = pignacio_scripts/pylint_extra/*
