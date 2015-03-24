@@ -41,6 +41,9 @@ lint:
 test: test-deps
 	python setup.py nosetests
 
+test-cover: test-deps
+	python setup.py nosetests --with-coverage --cover-inclusive --cover-package=pignacio_scripts
+
 test-all: test-deps
 	@if ! which tox >/dev/null; then echo "tox not installed.\nRun:\n    pip install tox" && false; fi
 	tox
