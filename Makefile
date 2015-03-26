@@ -55,13 +55,14 @@ test-deps:
 
 coverage: test-deps
 	coverage run --source pignacio_scripts setup.py nosetests
-	coverage report
-	coverage html
-	see htmlcov/index.html
+	make coverage-show
 
 coverage-all:
 	coverage erase
 	make test-all
+	make coverage-show
+
+coverage-show:
 	coverage report
 	coverage html
 	see htmlcov/index.html
