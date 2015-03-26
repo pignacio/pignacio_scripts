@@ -9,8 +9,7 @@ import logging
 from nose.tools import eq_, raises
 from mock import Mock, patch, sentinel
 
-from pignacio_scripts.mock_namedtuple import (
-    mock_namedtuple, mock_namedtuple_class)
+from pignacio_scripts.namedtuple import mock_namedtuple, mock_namedtuple_class
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -20,7 +19,7 @@ NamedTuple = collections.namedtuple("NamedTuple", ['a', 'b', 'c'])
 MockTuple = mock_namedtuple_class(NamedTuple)
 
 
-@patch('pignacio_scripts.mock_namedtuple.mock_namedtuple_class')
+@patch('pignacio_scripts.namedtuple.mock_nt.mock_namedtuple_class')
 def mock_nt_delegates_to_mock_nt_class_test(mock_nt_class_mock):
     tuple_class_mock = Mock()
     tuple_class_mock.return_value = sentinel.tuple
@@ -42,7 +41,7 @@ def fields_are_correctly_inited_test():
 
 @raises(AttributeError)
 def cannot_access_unmocked_fields_test():
-    MockTuple(a=3).b
+    MockTuple(a=3).b  # pylint:disable=expression-not-assigned
 
 
 @raises(ValueError)
