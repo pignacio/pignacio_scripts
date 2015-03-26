@@ -36,6 +36,8 @@ clean-test:
 
 lint:
 	@if ! which pylint >/dev/null; then echo "pylint not installed.\nRun:\n    pip install pylint" && false; fi
+	@if ! which pep8 >/dev/null; then echo "pep8 not installed.\nRun:\n    pip install pep8" && false; fi
+	-pep8 pignacio_scripts tests
 	pylint pignacio_scripts tests
 
 test: test-deps
