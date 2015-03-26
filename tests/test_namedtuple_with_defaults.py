@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from unittest import TestCase
 import logging
 
 from mock import patch, sentinel
 from nose.tools import eq_, ok_, raises
 
 from pignacio_scripts.namedtuple_with_defaults import namedtuple_with_defaults
-
+from pignacio_scripts.testing import TestCase
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
