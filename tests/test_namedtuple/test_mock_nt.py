@@ -41,7 +41,7 @@ def fields_are_correctly_inited_test():
 
 @raises(AttributeError)
 def cannot_access_unmocked_fields_test():
-    MockTuple(a=3).b
+    MockTuple(a=3).b  # pylint:disable=expression-not-assigned
 
 
 @raises(ValueError)
