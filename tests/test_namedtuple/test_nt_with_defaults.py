@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=protected-access,invalid-name
 from __future__ import absolute_import, unicode_literals
 
 import logging
 
 from mock import patch, sentinel
-from nose.tools import eq_, ok_, raises
+from nose.tools import eq_, ok_
 
-from pignacio_scripts.namedtuple_with_defaults import namedtuple_with_defaults
+from pignacio_scripts.namedtuple import namedtuple_with_defaults
 from pignacio_scripts.testing import TestCase
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-@patch('pignacio_scripts.namedtuple_with_defaults.collections.namedtuple')
+@patch('pignacio_scripts.namedtuple.nt_with_defaults.collections.namedtuple')
 def test_nt_with_defs_delegates_to_nt(nt_mock):
     class NTClass(object):  # pylint: disable=too-few-public-methods
         pass
@@ -70,7 +71,8 @@ class NamedtupleWithDefaultsTest(TestCase):
 
 class GetDefaultsTest(TestCase):
     def setUp(self):
-        class TupleClass(namedtuple_with_defaults('TestTuple', 'a,b,c')):  # pylint: disable=too-few-public-methods
+        # pylint: disable=too-few-public-methods
+        class TupleClass(namedtuple_with_defaults('TestTuple', 'a,b,c')):
             @classmethod
             def _get_defaults(cls):
                 return dict(b=sentinel.b_default)
