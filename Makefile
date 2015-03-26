@@ -59,6 +59,13 @@ coverage: test-deps
 	coverage html
 	see htmlcov/index.html
 
+coverage-all:
+	coverage erase
+	make test-all
+	coverage report
+	coverage html
+	see htmlcov/index.html
+
 docs:
 	@if ! which sphinx-apidoc >/dev/null; then echo "sphinx not installed.\nRun:\n    pip install sphinx" && false; fi
 	rm -f docs/pignacio_scripts.rst
