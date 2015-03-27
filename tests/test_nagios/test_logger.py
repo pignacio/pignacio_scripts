@@ -9,9 +9,11 @@ import sys
 
 from pignacio_scripts.testing import TestCase
 from pignacio_scripts.testing.mock import sentinel, patch, Mock
-from pignacio_scripts.nagios_logger.logger import (
+from pignacio_scripts.nagios import NagiosLogger
+from pignacio_scripts.nagios.logger import (
     get_default_first_line, get_first_line, print_and_exit, list_messages,
-    get_output, print_lines, LoggerStatus, Message, NagiosLogger)
+    get_output, print_lines, LoggerStatus, Message
+)
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -230,7 +232,7 @@ class GetFirstLineTests(TestCase):
         line = get_first_line(self.status, '<message>')
         self.assertEqual(line, 'STATUS: OK. <message>')
 
-    @patch('pignacio_scripts.nagios_logger.logger.get_default_first_line')
+    @patch('pignacio_scripts.nagios.logger.get_default_first_line')
     def test_uses_default_line_if_message_is_missing(self, mock_default):
         mock_default.return_value = '<default_line>'
         line = get_first_line(self.status)
@@ -241,12 +243,12 @@ class GetFirstLineTests(TestCase):
 class PrintAndExitTests(TestCase):
     def setUp(self):
         self.mock_get_output = self.patch(
-            'pignacio_scripts.nagios_logger.logger.get_output', autospec=True)
+            'pignacio_scripts.nagios.logger.get_output', autospec=True)
         self.mock_get_output.return_value = sentinel.output
         self.mock_print_lines = self.patch(
-            'pignacio_scripts.nagios_logger.logger.print_lines', autospec=True)
+            'pignacio_scripts.nagios.logger.print_lines', autospec=True)
         self.mock_sys_exit = self.patch(
-            'pignacio_scripts.nagios_logger.logger.sys.exit', autospec=True)
+            'pignacio_scripts.nagios.logger.sys.exit', autospec=True)
         self.status = LoggerStatus(
             unknown=sentinel.unknown,
             warnings=sentinel.warnings,
@@ -330,10 +332,10 @@ class ListMessagesTests(TestCase):
 class GetOutputTests(TestCase):
     def setUp(self):
         self.mock_list_messages = self.patch(
-            'pignacio_scripts.nagios_logger.logger.list_messages',
+            'pignacio_scripts.nagios.logger.list_messages',
             autospec=True)
         self.mock_get_first_line = self.patch(
-            'pignacio_scripts.nagios_logger.logger.get_first_line',
+            'pignacio_scripts.nagios.logger.get_first_line',
             autospec=True)
 
         list_message_returns = {
@@ -416,7 +418,7 @@ class NagiosLoggerRunTests(TestCase):
     def setUp(self):
         self.stdout = self.capture_stdout()
         self.mock_print_and_exit = self.patch(
-            'pignacio_scripts.nagios_logger.logger.print_and_exit',
+            'pignacio_scripts.nagios.logger.print_and_exit',
             autospec=True,
         )
         self.mock_func = Mock(spec=lambda: None)
@@ -456,8 +458,8 @@ class NagiosLoggerRunTests(TestCase):
 
         mock_stop.assert_called_once_with("Premature exit")
 
-    @patch('pignacio_scripts.nagios_logger.logger.traceback.print_exception')
-    @patch('pignacio_scripts.nagios_logger.logger.sys.exc_info')
+    @patch('pignacio_scripts.nagios.logger.traceback.print_exception')
+    @patch('pignacio_scripts.nagios.logger.sys.exc_info')
     @patch.object(NagiosLogger, 'unknown_stop')
     def test_stops_on_error(self, mock_stop, mock_exc_info, mock_print_exc):
         self.mock_func.side_effect = iter([ValueError("MyError")])
@@ -466,7 +468,7 @@ class NagiosLoggerRunTests(TestCase):
         NagiosLogger.run(self.mock_func)
 
         mock_stop.assert_called_once_with(
-            'Exception thrown: <type \'exceptions.IndexError\'>, <emsg>')
+            'Exception thrown: IndexError, <emsg>')
         mock_exc_info.assert_called_once_with()
         mock_print_exc.assert_called_once_with(
             IndexError, '<emsg>', sentinel.traceback, file=sys.stdout)
@@ -534,7 +536,7 @@ class NagiosLoggerUnknownTests(TestCase):
         self.mock_status = self.patch_object(NagiosLogger, 'status',
                                              autospec=True)
         self.mock_print_and_exit = self.patch(
-            'pignacio_scripts.nagios_logger.logger.print_and_exit',
+            'pignacio_scripts.nagios.logger.print_and_exit',
             autospec=True)
 
         self.mock_status.set_unknown.return_value = sentinel.with_unknown
