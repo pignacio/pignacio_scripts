@@ -14,3 +14,4 @@ Namedtuples
   :maxdepth: 1
 
   ./namedtuple/namedtuple-with-defaults
+  ./namedtuple/mock-namedtuple

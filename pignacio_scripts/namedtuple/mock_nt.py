@@ -23,6 +23,27 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 def mock_namedtuple_class(tuple_class):
+    """
+    Create a partially constructible namedtuple class, wrapping `tuple_class`.\
+    This allow for construction of testing stubs using only the needed data
+    fields, and avoids issues if an unrelated part of the namedtuple schema
+    changes.
+
+    Args:
+        tuple_class(type): Namedtuple class to wrap
+    Return:
+        The corresponding mock namedtuple class
+
+    >>> Tuple = collections.namedtuple('Tuple', ['a', 'b'])
+    >>> MockTuple = mock_namedtuple_class(Tuple)
+    >>> MockTuple(a=3).a
+    3
+    >>> MockTuple(a=3).b
+    Traceback (most recent call last):
+      [...]
+    AttributeError: Missing 'b' field in 'Tuple' mock. (id=140371982628528)
+
+    """
     class MockTuple(tuple_class):
         # pylint: disable=no-init,too-few-public-methods
         __EXCEPTION_SENTINEL = object()
@@ -51,4 +72,18 @@ def mock_namedtuple_class(tuple_class):
 
 
 def mock_namedtuple(tuple_class, **kwargs):
+    """
+    Create a mock namedtuple instance, with the given `tuple_class` and
+    `kwarigs`.
+
+    Args:
+        tuple_class(type): Namedtuple class to wrap
+        **kwargs: fields of the namedtuple to instantiate
+    Return:
+        The corresponding mock namedtuple instance
+
+    >>> Tuple = collections.namedtuple('Tuple', ['a', 'b'])
+    >>> mock_namedtuple(Tuple, b=5).b
+    5
+    """
     return mock_namedtuple_class(tuple_class)(**kwargs)
