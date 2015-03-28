@@ -15,3 +15,11 @@ Namedtuples
 
   ./namedtuple/namedtuple-with-defaults
   ./namedtuple/mock-namedtuple
+
+
+Nagios
+------
+.. toctree::
+  :maxdepth: 1
+
+  ./nagios/nagios-logger
