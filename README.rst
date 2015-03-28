@@ -1,6 +1,6 @@
-===============================
-My scripts
-===============================
+==================
+pignacio's scripts
+==================
 
 .. image:: https://pypip.in/version/pignacio_scripts/badge.svg?style=flat
     :target: https://pypi.python.org/pypi/pignacio_scripts/

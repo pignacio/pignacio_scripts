@@ -36,9 +36,9 @@ is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-My scripts could always use more documentation, whether as part of the
-official My scripts docs, in docstrings, or even on the web in blog posts,
-articles, and such.
+These scripts could always use more documentation, whether as part of the
+official  docs, in docstrings, or even on the web in blog posts, articles, and
+such.
 
 Submit Feedback
 ~~~~~~~~~~~~~~~
