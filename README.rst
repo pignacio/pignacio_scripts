@@ -23,7 +23,7 @@ My scripts
 
 Reusable python scripts and snippets I find useful
 
-* Free software: GPLv3 license
+* Free software: LGPLv2.1 license
 * Documentation: https://pignacio_scripts.readthedocs.org.
 
 Features
