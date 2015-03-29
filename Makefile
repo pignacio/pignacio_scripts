@@ -76,14 +76,17 @@ docs:
 	$(MAKE) -C docs html
 	see docs/_build/html/index.html
 
-release: clean
+release: clean dist-deps
 	python setup.py sdist upload
 	python setup.py bdist_wheel upload
 
-dist: clean
+dist: clean dist-deps
 	python setup.py sdist
 	python setup.py bdist_wheel
 	ls -l dist
+
+dist-deps:
+	pip install -r dist_requirements.txt
 
 install: clean
 	python setup.py install
