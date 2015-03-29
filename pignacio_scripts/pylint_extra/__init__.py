@@ -16,13 +16,10 @@
 # along with this library; if not, see <http://www.gnu.org/licenses/>.
 from __future__ import absolute_import, unicode_literals
 
-import collections
-import json
 import logging
 import sys
 
-from astroid import MANAGER, nodes, inference_tip, UseInferenceDefault, BRAIN_MODULES_DIR
-from astroid.builder import AstroidBuilder
+from astroid import MANAGER, nodes, inference_tip, BRAIN_MODULES_DIR
 
 sys.path.append(BRAIN_MODULES_DIR)
 import py2stdlib
@@ -32,9 +29,9 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 def _looks_like_nt_with_defaults(node):
     func = node.func
-    if type(func) == nodes.Getattr:
+    if type(func) == nodes.Getattr:  # pylint: disable=unidiomatic-typecheck
         return func.attrname == 'namedtuple_with_defaults'
-    elif type(func) == nodes.Name:
+    elif type(func) == nodes.Name:  # pylint: disable=unidiomatic-typecheck
         return func.name == 'namedtuple_with_defaults'
     return False
 
@@ -48,5 +45,6 @@ def register(_linter):
     pass
 
 
-MANAGER.register_transform(nodes.CallFunc, inference_tip(nt_with_defaults_transform),
+MANAGER.register_transform(nodes.CallFunc,
+                           inference_tip(nt_with_defaults_transform),
                            _looks_like_nt_with_defaults)
