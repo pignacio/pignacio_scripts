@@ -1,3 +1,5 @@
+.. _namedtuple/namedtuple-with-defaults:
+
 ==============================
 Namedtuple with default values
 ==============================

@@ -1,3 +1,5 @@
+.. _namedtuple/mock-namedtuple:
+
 =====================
 Mocks for namedtuples
 =====================
