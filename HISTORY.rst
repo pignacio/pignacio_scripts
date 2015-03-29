@@ -3,8 +3,11 @@
 History
 -------
 
-0.0.1 (2015-03-29)
+0.0.2 (in-development)
 ----------------------
+
+0.0.1 (2015-03-29)
+------------------
 
 * Packaging
 * Namedtuple with defaults
