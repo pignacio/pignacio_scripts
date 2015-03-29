@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class Capturer(object):
-    """ Context manager for patching a stream with a `StringIO` instance."""
+    """ Context manager for patching a stream with a ``StringIO`` instance."""
     def __init__(self, obj, attribute):
         self._obj = obj
         self._attribute = attribute
@@ -34,7 +34,7 @@ class Capturer(object):
         self._started = False
 
     def start(self):
-        """ Replace the target attribute with a StringIO instance.
+        """ Replace the target attribute with a ``StringIO`` instance.
 
         Returns:
             StringIO: The patched stream new value
@@ -62,7 +62,7 @@ class Capturer(object):
 
 
 def capture_stdout(func=None):
-    """ Replaces the standard output stream with a StringIO instance.
+    """ Replaces the standard output stream with a ``StringIO`` instance.
 
     If the argument is supplied, it works as a decorator, adding the captured
     stdout argument at the end of the argument list.

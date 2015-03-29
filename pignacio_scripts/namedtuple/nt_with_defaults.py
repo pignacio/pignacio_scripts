@@ -26,8 +26,8 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 def namedtuple_with_defaults(tuple_name, fields, defaults=None):
     '''
-    Create a :py:class:`collections.namedtuple` subclass with the given `name`
-    and `fields` which has default values for some fields.
+    Create a :py:class:`collections.namedtuple` subclass with the given
+    ``name`` and ``fields`` which has default values for some fields.
 
     Args:
         tuple_name (str): namedtuple's name.

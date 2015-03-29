@@ -30,8 +30,8 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 class TestCase(unittest.TestCase):
     """ Custom TestCase class with additional methods. """
     def patch(self, *args, **kwargs):
-        """ Patch an object via `mock.patch`. Automatically cleans up for
-        each test. Should be used inside `setUp`.
+        """ Patch an object via ``mock.patch``. Automatically cleans up for
+        each test. Should be used inside ``setUp``.
 
         Args:
             *args: arguments to be passed to mock.patch
@@ -45,12 +45,12 @@ class TestCase(unittest.TestCase):
         return patcher.start()
 
     def patch_object(self, *args, **kwargs):
-        """ Patch an object via `mock.patch.object`. Automatically cleans up for
-        each test. Should be used inside `setUp`.
+        """ Patch an object via ``mock.patch.object``. Automatically cleans up
+        for each test. Should be used inside ``setUp``.
 
         Args:
-            *args: arguments to be passed to mock.patch.object
-            **kwargs: keyword arguments to be passed to mock.patch.object
+            *args: arguments to be passed to ``mock.patch.object``
+            **kwargs: keyword arguments to be passed to ``mock.patch.object``
 
         Returns:
             The mock for the patched object.
@@ -60,7 +60,7 @@ class TestCase(unittest.TestCase):
         return patcher.start()
 
     def capture_stdout(self):
-        """ Captures the stdout for each test. Should be used inside `setUp`.
+        """ Captures the stdout for each test. Should be used inside ``setUp``.
 
         Returns:
             StringIO: the buffered stdout
@@ -70,7 +70,7 @@ class TestCase(unittest.TestCase):
         return patcher.start()
 
     def assertSize(self, obj, size, msg=None):  # pylint: disable=invalid-name
-        """Same as self.assertEqual(len(obj), size), with a nicer default
+        """Same as ``self.assertEqual(len(obj), size)``, with a nicer default
         message."""
         try:
             obj_size = len(obj)

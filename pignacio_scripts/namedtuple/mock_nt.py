@@ -24,10 +24,12 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 def mock_namedtuple_class(tuple_class):
     """
-    Create a partially constructible namedtuple class, wrapping `tuple_class`.\
-    This allow for construction of testing stubs using only the needed data
-    fields, and avoids issues if an unrelated part of the namedtuple schema
-    changes.
+    Create a partially constructible namedtuple class, wrapping
+    ``tuple_class``.
+
+    This allow for construction of testing stubs using only
+    the needed data fields, and avoids issues if an unrelated part of the
+    namedtuple schema changes.
 
     Args:
         tuple_class(type): Namedtuple class to wrap
@@ -73,8 +75,8 @@ def mock_namedtuple_class(tuple_class):
 
 def mock_namedtuple(tuple_class, **kwargs):
     """
-    Create a mock namedtuple instance, with the given `tuple_class` and
-    `kwarigs`.
+    Create a mock namedtuple instance, with the given ``tuple_class`` and
+    ``kwargs``.
 
     Args:
         tuple_class(type): Namedtuple class to wrap
