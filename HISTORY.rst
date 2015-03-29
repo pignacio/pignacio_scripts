@@ -12,3 +12,4 @@ History
 * NagiosLogger
 * Custom TestCase
 * capture_stdout
+* Colors for the terminal

@@ -25,6 +25,13 @@ Nagios
   ./nagios/nagios-logger
 
 
+Terminal
+--------
+.. toctree::
+  :maxdepth: 1
+
+  ./terminal/color
+
 Testing
 -------
 
