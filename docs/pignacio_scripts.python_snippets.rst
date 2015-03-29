@@ -4,14 +4,6 @@ pignacio_scripts.python_snippets package
 Submodules
 ----------
 
-pignacio_scripts.python_snippets.color module
----------------------------------------------
-
-.. automodule:: pignacio_scripts.python_snippets.color
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 pignacio_scripts.python_snippets.snippets module
 ------------------------------------------------
 
