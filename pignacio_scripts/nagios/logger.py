@@ -192,7 +192,7 @@ def get_output(status, additional, message=None):
     lines.extend(list_messages(status.errors, 'ERRORS'))
     lines.extend(list_messages(status.warnings, 'WARNINGS'))
     lines.extend(list_messages(status.important, 'IMPORTANT',
-                 include_labels=False))
+                               include_labels=False))
     lines.append('Additional info:')
     lines.append(additional)
     return lines

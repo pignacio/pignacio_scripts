@@ -96,4 +96,3 @@ class GetDefaultsTest(TestCase):
         second.a.append('second')
         self.assertEqual(first.a, ['first'])
         self.assertEqual(second.a, ['second'])
-

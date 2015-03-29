@@ -531,6 +531,7 @@ class NagiosLoggerMessagesTests(TestCase):
             sentinel.message)
         self.assertEqual(NagiosLogger.status, sentinel.with_important)
 
+
 class NagiosLoggerUnknownTests(TestCase):
     def setUp(self):
         self.mock_status = self.patch_object(NagiosLogger, 'status',

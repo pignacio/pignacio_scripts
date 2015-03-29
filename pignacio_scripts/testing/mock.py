@@ -25,9 +25,9 @@ __all__ = ['create_autospec', 'patch', 'sentinel', 'Mock', 'MagicMock']
 
 # python version based mock module:
 if sys.version_info[0] == 2:
-    import mock  # pylint: disable=unused-import
+    import mock
 else:
-    from unittest import mock  # pylint: disable=no-name-in-module,unused-import
+    from unittest import mock  # pylint: disable=no-name-in-module
 
 
 create_autospec = mock.create_autospec
