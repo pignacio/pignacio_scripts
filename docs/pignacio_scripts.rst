@@ -1,17 +1,17 @@
 pignacio_scripts package
 ========================
 
-Submodules
-----------
+Subpackages
+-----------
 
-pignacio_scripts.pignacio_scripts module
-----------------------------------------
+.. toctree::
 
-.. automodule:: pignacio_scripts.pignacio_scripts
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+    pignacio_scripts.nagios
+    pignacio_scripts.namedtuple
+    pignacio_scripts.pylint_extra
+    pignacio_scripts.python_snippets
+    pignacio_scripts.terminal
+    pignacio_scripts.testing
 
 Module contents
 ---------------
