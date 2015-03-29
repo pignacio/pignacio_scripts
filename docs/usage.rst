@@ -2,9 +2,12 @@
 Usage
 ========
 
-To use these scripts in a project::
+To use these scripts in a project, you can run:
 
-    import pignacio_scripts
+  ``pip install pignacio_scripts``
+
+Alternatively, you can copy the features you need. The files are (almost) self
+contained.
 
 
 Namedtuples
