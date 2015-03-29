@@ -28,23 +28,49 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class TestCase(unittest.TestCase):
+    """ Custom TestCase class with additional methods. """
     def patch(self, *args, **kwargs):
+        """ Patch an object via ``mock.patch``. Automatically cleans up for
+        each test. Should be used inside ``setUp``.
+
+        Args:
+            *args: arguments to be passed to mock.patch
+            **kwargs: keyword arguments to be passed to mock.patch
+
+        Returns:
+            The mock for the patched object.
+        """
         patcher = patch(*args, **kwargs)
         self.addCleanup(patcher.stop)
         return patcher.start()
 
     def patch_object(self, *args, **kwargs):
+        """ Patch an object via ``mock.patch.object``. Automatically cleans up
+        for each test. Should be used inside ``setUp``.
+
+        Args:
+            *args: arguments to be passed to ``mock.patch.object``
+            **kwargs: keyword arguments to be passed to ``mock.patch.object``
+
+        Returns:
+            The mock for the patched object.
+        """
         patcher = patch.object(*args, **kwargs)
         self.addCleanup(patcher.stop)
         return patcher.start()
 
     def capture_stdout(self):
+        """ Captures the stdout for each test. Should be used inside ``setUp``.
+
+        Returns:
+            StringIO: the buffered stdout
+        """
         patcher = capture_stdout()
         self.addCleanup(patcher.stop)
         return patcher.start()
 
     def assertSize(self, obj, size, msg=None):  # pylint: disable=invalid-name
-        """Same as self.assertEqual(len(obj), size), with a nicer default
+        """Same as ``self.assertEqual(len(obj), size)``, with a nicer default
         message."""
         try:
             obj_size = len(obj)

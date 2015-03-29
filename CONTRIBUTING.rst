@@ -36,9 +36,9 @@ is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-My scripts could always use more documentation, whether as part of the
-official My scripts docs, in docstrings, or even on the web in blog posts,
-articles, and such.
+These scripts could always use more documentation, whether as part of the
+official  docs, in docstrings, or even on the web in blog posts, articles, and
+such.
 
 Submit Feedback
 ~~~~~~~~~~~~~~~
@@ -55,14 +55,17 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `pignacio_scripts` for local development.
+Ready to contribute? Here's how to set up `pignacio_scripts` for local
+development.
 
 1. Fork the `pignacio_scripts` repo on GitHub.
 2. Clone your fork locally::
 
     $ git clone git@github.com:your_name_here/pignacio_scripts.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Install your local copy into a virtualenv. Assuming you have
+   virtualenvwrapper installed, this is how you set up your fork for local
+   development::
 
     $ mkvirtualenv pignacio_scripts
     $ cd pignacio_scripts/
@@ -74,11 +77,12 @@ Ready to contribute? Here's how to set up `pignacio_scripts` for local developme
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass pylint and the tests, including testing other Python versions with tox::
+5. When you're done making changes, check that your changes pass pylint and the
+   tests, including testing other Python versions with tox::
 
-    $ pylint pignacio_scripts tests
-    $ python setup.py test
-    $ tox
+    $ make lint
+    $ make test  # Tests current python version
+    $ make test-all  # Tests all versions with tox
 
    To get pylint and tox, just pip install them into your virtualenv.
 
@@ -108,4 +112,4 @@ Tips
 
 To run a subset of tests::
 
-    $ python -m unittest tests.test_pignacio_scripts
+    $ python setup.py nosetests --tests tests/test_testing

@@ -83,3 +83,17 @@ class GetDefaultsTest(TestCase):
         eq_(value.a, sentinel.a)
         eq_(value.b, sentinel.b_default)
         eq_(value.c, sentinel.c)
+
+    def test_mutable_defaults_work(self):
+        class TupleClass(namedtuple_with_defaults('TestTuple', 'a')):
+            @classmethod
+            def _get_defaults(cls):
+                return dict(a=[], b=[], c=[])
+
+        first = TupleClass()
+        first.a.append('first')
+        second = TupleClass()
+        second.a.append('second')
+        self.assertEqual(first.a, ['first'])
+        self.assertEqual(second.a, ['second'])
+
