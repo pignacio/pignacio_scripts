@@ -10,3 +10,5 @@ History
 * Namedtuple with defaults
 * Mock namedtuple
 * NagiosLogger
+* Custom TestCase
+* capture_stdout

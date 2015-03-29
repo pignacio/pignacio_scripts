@@ -23,3 +23,13 @@ Nagios
   :maxdepth: 1
 
   ./nagios/nagios-logger
+
+
+Testing
+-------
+
+.. toctree::
+  :maxdepth: 1
+
+  ./testing/testcase
+  ./testing/capture-stdout
