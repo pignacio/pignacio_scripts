@@ -39,17 +39,20 @@ Features
 
 * I like namedtuples, so:
 
-  * :ref:`Namedtuple with default values
-    <namedtuple/namedtuple-with-defaults>`
-  * :ref:`Mock namedtuples for testing <namedtuple/mock-namedtuple>`
+  * `Namedtuple with default values
+    <http://pignacio_scripts.rtfd.org/en/latest/namedtuple/namedtuple-with-defaults.html>`_
+  * `Mock namedtuples for testing
+    <http://pignacio_scripts.rtfd.org/en/latest/namedtuple/mock-namedtuple.html>`_
 
-* :ref:`A helper for creating alarms/checks for nagios/icinga
-  <nagios/nagios-logger>`
+* `A helper for creating alarms/checks for nagios/icinga
+  <http://pignacio_scripts.rtfd.org/en/latest/nagios/nagios-logger.html>`_
 * Some testing utilities:
 
-  * :ref:`An extended TestCase class<testing/testcase>`
-  * :ref:`A helper for capturing and testing writes to stdout
-    <testing/capture-stdout>`
+  * `An extended TestCase class
+    <http://pignacio_scripts.rtfd.org/en/latest/testing/testcase.html>`_
+  * `A helper for capturing and testing writes to stdout
+    <http://pignacio_scripts.rtfd.org/en/latest/testing/capture-stdout.html>`_
 
-* :ref:`Quick coloring functions for terminal output <terminal/color>`
+* `Quick coloring functions for terminal output
+  <http://pignacio_scripts.rtfd.org/en/latest/terminal/color.html>`_
 * ... and some more stuff not worth mentioning :)
