@@ -31,18 +31,15 @@ Construction fails if one of the fields without default is missing:
     [..]
   ValueError: Missing argument for namedtuple: 'a'
 
-If you need a mutable default value (``[]``, ``{}``, etc.), you can override
-the ``_get_defaults`` classmethod.
+If you need a mutable default value (``[]``, ``{}``, etc.), you can pass a
+function with no arguments that returns the defaults.
 
 .. code:: python
 
-  >>> _MyTuple = namedtuple_with_defaults('MyTuple', ['value', 'error_list'])
+  >>> MyTuple = namedtuple_with_defaults(
+          'MyTuple', ['value', 'error_list'],
+          defaults=lambda: {'error_list': []})
   >>>
-  >>> class MyTuple(_MyTuple):
-  ...     @classmethod
-  ...     def _get_defaults(cls):
-  ...        return {'error_list': []}
-  ...
   >>> MyTuple(value=3)
   MyTuple(value=3, error_list=[])
 

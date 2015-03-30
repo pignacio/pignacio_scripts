@@ -49,14 +49,15 @@ def namedtuple_with_defaults(tuple_name, fields, defaults=None):
 
     # pylint: disable=no-init,too-few-public-methods
     class NamedTuple(tuple_class):
-        __defaults = defaults
+        # Magic: this also works as expected with dicts
+        __defaults = staticmethod(defaults)
 
         def __new__(cls, *args, **kwargs):
             if len(args) > len(tuple_class._fields):
                 raise ValueError('Too many arguments for namedtuple: got {} '
                                  'instead of {}'
                                  .format(len(args), len(tuple_class._fields)))
-            defaults = cls._get_defaults()
+            defaults = cls.__get_defaults()
             fields_in_args = set(tuple_class._fields[:len(args)])
             kwvalues = {f: cls.__extract_value(f, kwargs, defaults)
                         for f in tuple_class._fields
@@ -78,8 +79,11 @@ def namedtuple_with_defaults(tuple_name, fields, defaults=None):
                                      .format(key))
 
         @classmethod
-        def _get_defaults(cls):
-            return cls.__defaults
+        def __get_defaults(cls):
+            try:
+                return cls.__defaults()
+            except Exception:  # pylint: disable=broad-except
+                return cls.__defaults
 
     NamedTuple.__name__ = str(tuple_name)  # Prevent unicode in Python 2.x
 
