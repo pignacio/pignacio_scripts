@@ -69,14 +69,13 @@ class NamedtupleWithDefaultsTest(TestCase):
             sentinel.a, sentinel.b, sentinel.c, sentinel.d)
 
 
-class GetDefaultsTest(TestCase):
+class LambdaDefaultsTest(TestCase):
     def setUp(self):
         # pylint: disable=too-few-public-methods
-        class TupleClass(namedtuple_with_defaults('TestTuple', 'a,b,c')):
-            @classmethod
-            def _get_defaults(cls):
-                return dict(b=sentinel.b_default)
-        self.tuple_class = TupleClass
+        self.tuple_class = namedtuple_with_defaults(
+            'TestTuple', 'a,b,c', defaults=lambda: {
+                'b': sentinel.b_default,
+            })
 
     def test_default_is_set(self):
         value = self.tuple_class(sentinel.a, c=sentinel.c)
@@ -85,14 +84,14 @@ class GetDefaultsTest(TestCase):
         eq_(value.c, sentinel.c)
 
     def test_mutable_defaults_work(self):
-        class TupleClass(namedtuple_with_defaults('TestTuple', 'a')):
-            @classmethod
-            def _get_defaults(cls):
-                return dict(a=[], b=[], c=[])
+        TestTuple = namedtuple_with_defaults(
+            'TestTuple', 'a', defaults=lambda: {
+                'a': [],
+            })
 
-        first = TupleClass()
+        first = TestTuple()
         first.a.append('first')
-        second = TupleClass()
+        second = TestTuple()
         second.a.append('second')
         self.assertEqual(first.a, ['first'])
         self.assertEqual(second.a, ['second'])
