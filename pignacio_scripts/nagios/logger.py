@@ -146,6 +146,8 @@ class NagiosLogger(object):  # pylint: disable=no-init
             cls.unknown_stop("Exception thrown: %s, %s" % (etype.__name__,
                                                            value))
         except SystemExit:
+            etype, value, trace = sys.exc_info()
+            traceback.print_exception(etype, value, trace, file=sys.stdout)
             cls.unknown_stop("Premature exit")
         print_and_exit(cls.status, cls._buffer.getvalue())
 
