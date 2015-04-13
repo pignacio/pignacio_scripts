@@ -18,7 +18,6 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
-
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
@@ -46,6 +45,7 @@ def mock_namedtuple_class(tuple_class):
     AttributeError: Missing 'b' field in 'Tuple' mock. (id=140371982628528)
 
     """
+
     class MockTuple(tuple_class):
         # pylint: disable=no-init,too-few-public-methods
         __EXCEPTION_SENTINEL = object()
@@ -70,6 +70,7 @@ def mock_namedtuple_class(tuple_class):
                                      .format(attr, tuple_class.__name__,
                                              id(self)))
             return value
+
     return MockTuple
 
 

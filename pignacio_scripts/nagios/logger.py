@@ -17,15 +17,14 @@
 '''
 NagiosLogger: A helper for creating nagios/icinga checkers
 '''
-from __future__ import (
-    absolute_import, unicode_literals, division, print_function)
+from __future__ import (absolute_import, unicode_literals, division,
+                        print_function)
 
 import collections
 import logging
 import six
 import sys
 import traceback
-
 
 Message = collections.namedtuple('Message', ['message', 'label'])
 _LoggerStatus = collections.namedtuple('LoggerStatus',
@@ -42,32 +41,21 @@ class LoggerStatus(_LoggerStatus):
 
     @classmethod
     def initial(cls):
-        return cls(
-            unknown=False,
-            errors=[],
-            warnings=[],
-            important=[],
-        )
+        return cls(unknown=False, errors=[], warnings=[], important=[], )
 
     def set_unknown(self):
-        return self._replace(
-            unknown=True,
-        )
+        return self._replace(unknown=True, )
 
     def add_error(self, message, label):
-        return self._replace(
-            errors=self.errors + [Message(message, label)]
-        )
+        return self._replace(errors=self.errors + [Message(message, label)])
 
     def add_warning(self, message, label):
         return self._replace(
-            warnings=self.warnings + [Message(message, label)]
-        )
+            warnings=self.warnings + [Message(message, label)])
 
     def add_important(self, message):
         return self._replace(
-            important=self.important + [Message(message, None)]
-        )
+            important=self.important + [Message(message, None)])
 
     def exit_code(self):
         if self.unknown:
@@ -196,7 +184,6 @@ def get_output(status, additional, message=None):
     lines.append('Additional info:')
     lines.append(additional)
     return lines
-
 
 # Nagios statuses labels
 STATUS_LABELS = {

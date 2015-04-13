@@ -20,7 +20,6 @@ import collections
 import logging
 import sys
 
-
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
@@ -59,9 +58,10 @@ def namedtuple_with_defaults(tuple_name, fields, defaults=None):
                                  .format(len(args), len(tuple_class._fields)))
             defaults = cls.__get_defaults()
             fields_in_args = set(tuple_class._fields[:len(args)])
-            kwvalues = {f: cls.__extract_value(f, kwargs, defaults)
-                        for f in tuple_class._fields
-                        if f not in fields_in_args}
+            kwvalues = {
+                f: cls.__extract_value(f, kwargs, defaults)
+                for f in tuple_class._fields if f not in fields_in_args
+            }
             if kwargs:
                 raise ValueError('Unexpected argument for namedtuple: {}'
                                  .format(kwargs.popitem()[0]))
