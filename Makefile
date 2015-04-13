@@ -90,3 +90,6 @@ dist-deps:
 
 install: clean
 	python setup.py install
+
+yapf:
+	find pignacio_scripts -name "*.py" -exec yapf --diff {} +
