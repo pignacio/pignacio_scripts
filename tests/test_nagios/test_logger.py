@@ -476,6 +476,7 @@ class NagiosLoggerRunTests(TestCase):
 
 class NagiosLoggerMessagesTests(TestCase):
     def setUp(self):
+        NagiosLogger.reset()
         self.mock_status = self.patch_object(NagiosLogger, 'status',
                                              autospec=True)
         self.mock_status.add_error.return_value = sentinel.with_error
@@ -534,6 +535,7 @@ class NagiosLoggerMessagesTests(TestCase):
 
 class NagiosLoggerUnknownTests(TestCase):
     def setUp(self):
+        NagiosLogger.reset()
         self.mock_status = self.patch_object(NagiosLogger, 'status',
                                              autospec=True)
         self.mock_print_and_exit = self.patch(
