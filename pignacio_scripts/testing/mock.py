@@ -19,16 +19,13 @@ from __future__ import absolute_import, unicode_literals
 
 import sys
 
-
 __all__ = ['create_autospec', 'patch', 'sentinel', 'Mock', 'MagicMock']
-
 
 # python version based mock module:
 if sys.version_info[0] == 2:
     import mock
 else:
     from unittest import mock  # pylint: disable=no-name-in-module
-
 
 create_autospec = mock.create_autospec
 patch = mock.patch

@@ -23,12 +23,12 @@ from unittest.util import safe_repr
 from .mock import patch
 from .capture import capture_stdout
 
-
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class TestCase(unittest.TestCase):
     """ Custom TestCase class with additional methods. """
+
     def patch(self, *args, **kwargs):
         """ Patch an object via ``mock.patch``. Automatically cleans up for
         each test. Should be used inside ``setUp``.
@@ -80,6 +80,6 @@ class TestCase(unittest.TestCase):
             return
 
         if size != obj_size:
-            standard_msg = "{}'s size is {} != {}".format(
-                safe_repr(obj), obj_size, size)
+            standard_msg = "{}'s size is {} != {}".format(safe_repr(obj),
+                                                          obj_size, size)
             self.fail(self._formatMessage(msg, standard_msg))
