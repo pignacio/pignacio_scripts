@@ -40,20 +40,20 @@ lint:
 	-pep8 pignacio_scripts tests
 	pylint pignacio_scripts tests
 
-test: test-deps
+test: test-deps clean-pyc
 	python setup.py nosetests
 
-test-cover: test-deps
+test-cover: test-deps clean-pyc
 	python setup.py nosetests --with-coverage --cover-package=pignacio_scripts
 
-test-all: test-deps
+test-all: test-deps clean-pyc
 	@if ! which tox >/dev/null; then echo "tox not installed.\nRun:\n    pip install tox" && false; fi
 	tox
 
 test-deps:
 	pip install -r test_requirements.txt
 
-coverage: test-deps
+coverage: test-deps clean-pyc
 	coverage run --source pignacio_scripts setup.py nosetests
 	make coverage-show
 
