@@ -95,6 +95,7 @@ class NagiosLogger(object):  # pylint: disable=no-init
 
     status = None
     _buffer = six.StringIO()
+    original_stdout = None
 
     # Pipe replacement for nagios output
     _PIPE_REPL = "__pipe__"
@@ -102,16 +103,24 @@ class NagiosLogger(object):  # pylint: disable=no-init
     @classmethod
     def init(cls, debug=False):
         cls.reset()
+        cls.original_stdout = sys.stdout
         sys.stderr = sys.stdout
         sys.stdout = cls._buffer
         level = logging.DEBUG if debug else logging.INFO
-        logging.basicConfig(level=level)
+        logging.basicConfig(level=level, stream=sys.stdout)
 
     @classmethod
     def reset(cls):
         cls.status = LoggerStatus.initial()
         cls._buffer.seek(0)
         cls._buffer.truncate(0)
+        cls.original_stdout = None
+
+    @classmethod
+    def _restore_stdout(cls):
+        if cls.original_stdout:
+            sys.stdout = cls.original_stdout
+        cls.original_stdout = None
 
     @classmethod
     def error(cls, line, label):
@@ -133,6 +142,7 @@ class NagiosLogger(object):  # pylint: disable=no-init
     @classmethod
     def unknown_stop(cls, message):
         cls.status = cls.status.set_unknown()
+        cls._restore_stdout()
         print_and_exit(cls.status, cls._buffer.getvalue(), message)
 
     @classmethod
@@ -149,6 +159,7 @@ class NagiosLogger(object):  # pylint: disable=no-init
             etype, value, trace = sys.exc_info()
             traceback.print_exception(etype, value, trace, file=sys.stdout)
             cls.unknown_stop("Premature exit")
+        cls._restore_stdout()
         print_and_exit(cls.status, cls._buffer.getvalue())
 
 

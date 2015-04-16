@@ -498,7 +498,30 @@ class NagiosLoggerRunTests(TestCase):
             'Exception thrown: IndexError, <emsg>')
         mock_exc_info.assert_called_once_with()
         mock_print_exc.assert_called_once_with(
-            IndexError, '<emsg>', sentinel.traceback, file=sys.stdout)
+            IndexError, '<emsg>', sentinel.traceback,
+            file=NagiosLogger._buffer)
+
+
+class SimpleRunTest(TestCase):
+    def setUp(self):
+        self.stdout = self.capture_stdout()
+
+    def test_simple_run(self):
+        def func():
+            print("<stdout>")
+
+        self.assertRaises(SystemExit, NagiosLogger.run, func)
+        output = self.stdout.getvalue()
+        self.assertIn('STATUS: OK', output.splitlines()[0])
+        self.assertIn('<stdout>', output)
+
+    def test_simple_unknown_run(self):
+        def func():
+            NagiosLogger.unknown_stop('<reason>')
+
+        self.assertRaises(SystemExit, NagiosLogger.run, func)
+        output = self.stdout.getvalue()
+        self.assertIn('STATUS: UNKNOWN. <reason>', output.splitlines()[0])
 
 
 class NagiosLoggerMessagesTests(TestCase):
