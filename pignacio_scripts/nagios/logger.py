@@ -159,7 +159,7 @@ def print_lines(lines):
 
 def print_and_exit(status, additional, message=None):
     lines = get_output(status, additional, message)
-    print_lines(lines)
+    print_lines(empty_lines_to_whitespace(lines))
     sys.exit(status.exit_code())
 
 
@@ -186,6 +186,11 @@ def get_output(status, additional, message=None):
     lines.append('Additional info:')
     lines.extend(additional.splitlines())
     return lines
+
+
+def empty_lines_to_whitespace(lines):
+    return [line if line != '' else ' ' for line in lines]
+
 
 # Nagios statuses labels
 STATUS_LABELS = {

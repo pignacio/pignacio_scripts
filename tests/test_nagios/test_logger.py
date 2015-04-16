@@ -12,7 +12,7 @@ from pignacio_scripts.testing.mock import sentinel, patch, Mock
 from pignacio_scripts.nagios import NagiosLogger
 from pignacio_scripts.nagios.logger import (
     get_default_first_line, get_first_line, print_and_exit, list_messages,
-    get_output, print_lines, LoggerStatus, Message
+    get_output, print_lines, LoggerStatus, Message, empty_lines_to_whitespace
 )
 
 
@@ -249,6 +249,10 @@ class PrintAndExitTests(TestCase):
             'pignacio_scripts.nagios.logger.print_lines', autospec=True)
         self.mock_sys_exit = self.patch(
             'pignacio_scripts.nagios.logger.sys.exit', autospec=True)
+        self.mock_empty_to_whitespace = self.patch(
+            'pignacio_scripts.nagios.logger.empty_lines_to_whitespace',
+            autospec=True)
+        self.mock_empty_to_whitespace.return_value = sentinel.whitespace_output
         self.status = LoggerStatus(
             unknown=sentinel.unknown,
             warnings=sentinel.warnings,
@@ -282,7 +286,12 @@ class PrintAndExitTests(TestCase):
             print_and_exit(self.status, sentinel.additional)
         except SystemExit:
             pass
-        self.mock_print_lines.assert_called_once_with(sentinel.output)
+        self.mock_print_lines.assert_called_once_with(
+            sentinel.whitespace_output)
+
+    def test_output_is_whitespaced(self):
+        print_and_exit(self.status, sentinel.additional)
+        self.mock_empty_to_whitespace.assert_called_once_with(sentinel.output)
 
     def test_system_exit_is_not_swallowed(self):
         self.mock_sys_exit.side_effect = iter([SystemExit()])
@@ -405,6 +414,20 @@ class PrintLinesTests(TestCase):
         print_lines(iter(['<line_1>', '<line_2>', '<line_3>']))
         self.assertEqual(self.stdout.getvalue(),
                          '<line_1>\n<line_2>\n<line_3>\n')
+
+
+class EmptyLinesToWhitespaceTests(TestCase):
+    def test_empties(self):
+        lines = empty_lines_to_whitespace(['', ''])
+        self.assertSize(lines, 2)
+        for line in lines:
+            self.assertNotEqual(line, '')
+            self.assertEqual(line.strip(), '')
+            self.assertNotIn('\n', line)
+
+    def test_non_empties(self):
+        original = ['line_1', 'line_2']
+        self.assertEqual(empty_lines_to_whitespace(original), original)
 
 
 class NagiosLoggerResetTests(TestCase):
