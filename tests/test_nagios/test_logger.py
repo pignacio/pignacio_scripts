@@ -355,16 +355,16 @@ class GetOutputTests(TestCase):
         )
 
     def test_calls_get_first_line(self):
-        get_output(self.status, sentinel.additional)
+        get_output(self.status, 'additional')
         self.mock_get_first_line.assert_called_once_with(self.status, None)
 
     def test_proxies_message(self):
-        get_output(self.status, sentinel.additional, sentinel.message)
+        get_output(self.status, 'additional', sentinel.message)
         self.mock_get_first_line.assert_called_once_with(self.status,
                                                          sentinel.message)
 
     def test_list_messages_calls(self):
-        get_output(self.status, sentinel.additional)
+        get_output(self.status, 'additional')
         self.mock_list_messages.assert_any_call(sentinel.errors, 'ERRORS')
         self.mock_list_messages.assert_any_call(sentinel.warnings, 'WARNINGS')
         self.mock_list_messages.assert_any_call(
@@ -372,7 +372,7 @@ class GetOutputTests(TestCase):
         self.assertEqual(self.mock_list_messages.call_count, 3)
 
     def test_output_order(self):
-        output = get_output(self.status, sentinel.additional)
+        output = get_output(self.status, 'additional')
         self.assertEqual(output, [
             sentinel.first_line,
             '',
@@ -380,8 +380,12 @@ class GetOutputTests(TestCase):
             sentinel.listed_warnings,
             sentinel.listed_important,
             'Additional info:',
-            sentinel.additional,
+            'additional',
         ])
+
+    def test_additional_is_split(self):
+        output = get_output(self.status, '<additional_1>\n<additional_2>')
+        self.assertEqual(['<additional_1>', '<additional_2>'], output[-2:])
 
 
 class PrintLinesTests(TestCase):

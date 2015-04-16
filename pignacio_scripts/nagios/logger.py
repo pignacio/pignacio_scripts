@@ -184,7 +184,7 @@ def get_output(status, additional, message=None):
     lines.extend(list_messages(status.important, 'IMPORTANT',
                                include_labels=False))
     lines.append('Additional info:')
-    lines.append(additional)
+    lines.extend(additional.splitlines())
     return lines
 
 # Nagios statuses labels
