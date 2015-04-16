@@ -107,7 +107,7 @@ class NagiosLogger(object):  # pylint: disable=no-init
         sys.stderr = sys.stdout
         sys.stdout = cls._buffer
         level = logging.DEBUG if debug else logging.INFO
-        logging.basicConfig(level=level)
+        logging.basicConfig(level=level, stream=sys.stdout)
 
     @classmethod
     def reset(cls):
