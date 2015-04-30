@@ -3,8 +3,8 @@
 History
 #######
 
-0.0.2 (in-development)
-----------------------
+0.0.2 (2015-04-30)
+------------------
 
 * Simpler ``NagiosLogger`` interface. (backwards incompatible)
 
