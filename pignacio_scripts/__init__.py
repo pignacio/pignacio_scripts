@@ -16,4 +16,4 @@
 
 __author__ = 'Ignacio Rossi'
 __email__ = 'rossi.ignacio@gmail.com '
-__version__ = '0.0.1'
+__version__ = '0.0.2'

@@ -34,9 +34,24 @@ If you need capturing stdout for all tests in a `TestCase`, you can:
          print "Hello world!"
          self.assertEqual(self.stdout.getvalue(), 'Hello world!\n')
 
+
+There's a function for checking partial calls to a ``mock`` :
+
+.. code:: python
+
+  def test_partial_calls(self):
+      mock = Mock()
+      mock(1, kwarg=2)
+
+      self.assertSoftCalledWith(mock, 1)           # OK
+      self.assertSoftCalledWith(mock, kwarg=2)     # OK
+      self.assertSoftCalledWith(mock, 1, kwarg=2)  # OK
+      self.assertSoftCalledWith(mock, 2)           # FAIL
+      self.assertSoftCalledWith(mock, kwarg=1)     # FAIL
+
 Lastly, a little helper function for checking sizes:
 
 .. code:: python
 
-      def test_some_size(self):
-          self.assertSize([1, 2, 3], 3)
+  def test_some_size(self):
+      self.assertSize([1, 2, 3], 3)

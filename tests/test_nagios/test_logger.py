@@ -11,8 +11,8 @@ from pignacio_scripts.testing import TestCase
 from pignacio_scripts.testing.mock import sentinel, patch, Mock
 from pignacio_scripts.nagios import NagiosLogger
 from pignacio_scripts.nagios.logger import (
-    get_default_first_line, get_first_line, print_and_exit, list_messages,
-    get_output, print_lines, LoggerStatus, Message
+    get_first_line_message, get_first_line, print_and_exit, list_messages,
+    get_output, print_lines, LoggerStatus, empty_lines_to_whitespace
 )
 
 
@@ -27,13 +27,13 @@ class InitialStatusTests(TestCase):
         self.assertEqual(self.status.unknown, False)
 
     def test_errors(self):
-        self.assertEqual(self.status.errors, [])
+        self.assertSize(self.status.errors, 0)
 
     def test_warnings(self):
-        self.assertEqual(self.status.warnings, [])
+        self.assertSize(self.status.warnings, 0)
 
     def test_important(self):
-        self.assertEqual(self.status.important, [])
+        self.assertSize(self.status.important, 0)
 
 
 class ExitCodeTests(TestCase):
@@ -49,12 +49,12 @@ class ExitCodeTests(TestCase):
 
     def test_unknown_beats_error(self):
         status = self.status.set_unknown()
-        status = status.add_error('message', 'label')
+        status = status.add_error('message')
         self.assertEqual(status.exit_code(), LoggerStatus.EXIT_UNK)
 
     def test_unknown_beats_warning(self):
         status = self.status.set_unknown()
-        status = status.add_warning('message', 'label')
+        status = status.add_warning('message')
         self.assertEqual(status.exit_code(), LoggerStatus.EXIT_UNK)
 
     def test_unknown_beats_important(self):
@@ -63,25 +63,25 @@ class ExitCodeTests(TestCase):
         self.assertEqual(status.exit_code(), LoggerStatus.EXIT_UNK)
 
     def test_error_exit_code(self):
-        status = self.status.add_error('message', 'label')
+        status = self.status.add_error('message')
         self.assertEqual(status.exit_code(), LoggerStatus.EXIT_CRIT)
 
     def test_error_beats_warning(self):
-        status = self.status.add_error('message', 'label')
-        status = status.add_warning('message', 'label')
+        status = self.status.add_error('message')
+        status = status.add_warning('message')
         self.assertEqual(status.exit_code(), LoggerStatus.EXIT_CRIT)
 
     def test_error_beats_important(self):
-        status = self.status.add_error('message', 'label')
+        status = self.status.add_error('message')
         status = status.add_important('message')
         self.assertEqual(status.exit_code(), LoggerStatus.EXIT_CRIT)
 
     def test_warning_exit_code(self):
-        status = self.status.add_warning('message', 'label')
+        status = self.status.add_warning('message')
         self.assertEqual(status.exit_code(), LoggerStatus.EXIT_WARN)
 
     def test_warning_beats_important(self):
-        status = self.status.add_warning('message', 'label')
+        status = self.status.add_warning('message')
         status = status.add_important('message')
         self.assertEqual(status.exit_code(), LoggerStatus.EXIT_WARN)
 
@@ -100,38 +100,34 @@ class AddStuffTests(TestCase):
         )
 
     def test_add_error(self):
-        status = self.status._replace(errors=[])
-        status = status.add_error(sentinel.message_1, sentinel.label_1)
-        status = status.add_error(sentinel.message_2, sentinel.label_2)
+        status = self.status._replace(errors=())
+        status = status.add_error("<message_1>")
+        status = status.add_error("<message_2>")
         self.assertSize(status.errors, 2)
-        self.assertEqual(status.errors[0].message, sentinel.message_1)
-        self.assertEqual(status.errors[0].label, sentinel.label_1)
-        self.assertEqual(status.errors[1].message, sentinel.message_2)
-        self.assertEqual(status.errors[1].label, sentinel.label_2)
+        self.assertEqual(status.errors[0], "<message_1>")
+        self.assertEqual(status.errors[1], "<message_2>")
         self.assertEqual(status.unknown, sentinel.unknown)
         self.assertEqual(status.warnings, sentinel.warnings)
         self.assertEqual(status.important, sentinel.important)
 
     def test_add_warning(self):
-        status = self.status._replace(warnings=[])
-        status = status.add_warning(sentinel.message_1, sentinel.label_1)
-        status = status.add_warning(sentinel.message_2, sentinel.label_2)
+        status = self.status._replace(warnings=())
+        status = status.add_warning("<message_1>")
+        status = status.add_warning("<message_2>")
         self.assertSize(status.warnings, 2)
-        self.assertEqual(status.warnings[0].message, sentinel.message_1)
-        self.assertEqual(status.warnings[0].label, sentinel.label_1)
-        self.assertEqual(status.warnings[1].message, sentinel.message_2)
-        self.assertEqual(status.warnings[1].label, sentinel.label_2)
+        self.assertEqual(status.warnings[0], "<message_1>")
+        self.assertEqual(status.warnings[1], "<message_2>")
         self.assertEqual(status.unknown, sentinel.unknown)
         self.assertEqual(status.errors, sentinel.errors)
         self.assertEqual(status.important, sentinel.important)
 
     def test_add_important(self):
-        status = self.status._replace(important=[])
-        status = status.add_important(sentinel.message_1)
-        status = status.add_important(sentinel.message_2)
+        status = self.status._replace(important=())
+        status = status.add_important("<message_1>")
+        status = status.add_important("<message_2>")
         self.assertSize(status.important, 2)
-        self.assertEqual(status.important[0].message, sentinel.message_1)
-        self.assertEqual(status.important[1].message, sentinel.message_2)
+        self.assertEqual(status.important[0], "<message_1>")
+        self.assertEqual(status.important[1], "<message_2>")
         self.assertEqual(status.unknown, sentinel.unknown)
         self.assertEqual(status.errors, sentinel.errors)
         self.assertEqual(status.warnings, sentinel.warnings)
@@ -145,61 +141,80 @@ class AddStuffTests(TestCase):
         self.assertEqual(status.warnings, sentinel.warnings)
 
 
-class GetDefaultFirstLineTests(TestCase):
+class GetFirstLineMessageTests(TestCase):
     def setUp(self):
         self.status = LoggerStatus.initial()
 
-    def _test_line(self, status, line):
-        self.assertEqual(get_default_first_line(status), line)
+    def _test_line(self, status, line, message=None):
+        self.assertEqual(get_first_line_message(status, message), line)
 
     def test_no_errors_no_warnings(self):
         self._test_line(self.status, '')
 
     def test_one_error_no_warnings(self):
-        status = self.status.add_error('<err_msg>', '<err_label>')
-        self._test_line(status, 'Error in <err_label>: <err_msg>.')
+        status = self.status.add_error('<err_msg>')
+        self._test_line(status, 'Error: <err_msg>.')
 
     def test_multiple_error_no_warnings(self):
-        status = self.status.add_error('<err_msg>', '<err_label>')
-        status = status.add_error('<err_msg_2>', '<err_label_2>')
-        self._test_line(status, 'Errors in (<err_label>,<err_label_2>).')
+        status = self.status.add_error('<err_msg>')
+        status = status.add_error('<err_msg_2>')
+        self._test_line(status, '2 errors (First: <err_msg>).')
 
     def test_no_errors_one_warning(self):
-        status = self.status.add_warning('<wng_msg>', '<wng_label>')
-        self._test_line(status, 'Warning in <wng_label>: <wng_msg>.')
+        status = self.status.add_warning('<wng_msg>')
+        self._test_line(status, 'Warning: <wng_msg>.')
 
     def test_one_error_one_warning(self):
-        status = self.status.add_error('<err_msg>', '<err_label>')
-        status = status.add_warning('<wng_msg>', '<wng_label>')
-        self._test_line(status, ('Error in <err_label>: <err_msg>. '
-                                 'Warning in <wng_label>: <wng_msg>.'))
+        status = self.status.add_error('<err_msg>')
+        status = status.add_warning('<wng_msg>')
+        self._test_line(status, ('Error: <err_msg>.'))
 
     def test_multiple_error_one_warning(self):
-        status = self.status.add_error('<err_msg>', '<err_label>')
-        status = status.add_error('<err_msg_2>', '<err_label_2>')
-        status = status.add_warning('<wng_msg>', '<wng_label>')
-        self._test_line(status, ('Errors in (<err_label>,<err_label_2>). '
-                                 'Warning in <wng_label>: <wng_msg>.'))
+        status = self.status.add_error('<err_msg>')
+        status = status.add_error('<err_msg_2>')
+        status = status.add_warning('<wng_msg>')
+        self._test_line(status, '2 errors (First: <err_msg>).')
 
     def test_no_errors_multiple_warnings(self):
-        status = self.status.add_warning('<wng_msg>', '<wng_label>')
-        status = status.add_warning('<wng_msg_2>', '<wng_label_2>')
-        self._test_line(status, 'Warnings in (<wng_label>,<wng_label_2>).')
+        status = self.status.add_warning('<wng_msg>')
+        status = status.add_warning('<wng_msg_2>')
+        self._test_line(status, '2 warnings (First: <wng_msg>).')
 
     def test_one_error_multiple_warnings(self):
-        status = self.status.add_error('<err_msg>', '<err_label>')
-        status = status.add_warning('<wng_msg>', '<wng_label>')
-        status = status.add_warning('<wng_msg_2>', '<wng_label_2>')
-        self._test_line(status, ('Error in <err_label>: <err_msg>. '
-                                 'Warnings in (<wng_label>,<wng_label_2>).'))
+        status = self.status.add_error('<err_msg>')
+        status = status.add_warning('<wng_msg>')
+        status = status.add_warning('<wng_msg_2>')
+        self._test_line(status, 'Error: <err_msg>.')
 
     def test_multiple_error_multiple_warnings(self):
-        status = self.status.add_error('<err_msg>', '<err_label>')
-        status = status.add_error('<err_msg_2>', '<err_label_2>')
-        status = status.add_warning('<wng_msg>', '<wng_label>')
-        status = status.add_warning('<wng_msg_2>', '<wng_label_2>')
-        self._test_line(status, ('Errors in (<err_label>,<err_label_2>). '
-                                 'Warnings in (<wng_label>,<wng_label_2>).'))
+        status = self.status.add_error('<err_msg>')
+        status = status.add_error('<err_msg_2>')
+        status = status.add_warning('<wng_msg>')
+        status = status.add_warning('<wng_msg_2>')
+        self._test_line(status, '2 errors (First: <err_msg>).')
+
+    def test_message_is_shown(self):
+        self._test_line(self.status, '<message>', message='<message>')
+
+    def test_warning_hides_message(self):
+        status = self.status.add_warning('<warning>')
+        self._test_line(status, 'Warning: <warning>.', message="<message>")
+
+    def test_error_hides_message(self):
+        status = self.status.add_error('<error>')
+        self._test_line(status, 'Error: <error>.', message="<message>")
+
+    def test_unknown_state_default_mesage(self):
+        status = self.status.set_unknown()
+        status = status.add_error('<error>')
+        status = status.add_warning('<warning>')
+        self._test_line(status, 'Something unexpected happened')
+
+    def test_unknown_state_forces_message(self):
+        status = self.status.set_unknown()
+        status = status.add_error('<error>')
+        status = status.add_warning('<warning>')
+        self._test_line(status, '<message>', message="<message>")
 
 
 class GetFirstLineTests(TestCase):
@@ -228,27 +243,30 @@ class GetFirstLineTests(TestCase):
         line = get_first_line(self.status)
         self.assertTrue(line.startswith('STATUS: UNKNOWN.'))
 
-    def test_appends_message_if_present(self):
-        line = get_first_line(self.status, '<message>')
-        self.assertEqual(line, 'STATUS: OK. <message>')
+    @patch('pignacio_scripts.nagios.logger.get_first_line_message',
+           autospec=True)
+    def test_appends_first_line_message(self, mock_get_message):
+        mock_get_message.return_value = '<line_message>'
+        line = get_first_line(self.status, sentinel.message)
 
-    @patch('pignacio_scripts.nagios.logger.get_default_first_line')
-    def test_uses_default_line_if_message_is_missing(self, mock_default):
-        mock_default.return_value = '<default_line>'
-        line = get_first_line(self.status)
-        self.assertEqual(line, 'STATUS: OK. <default_line>')
-        mock_default.assert_called_once_with(self.status)
+        self.assertIn('<line_message>', line)
+        mock_get_message.assert_called_once_with(self.status, sentinel.message)
 
 
 class PrintAndExitTests(TestCase):
     def setUp(self):
         self.mock_get_output = self.patch(
-            'pignacio_scripts.nagios.logger.get_output', autospec=True)
+            'pignacio_scripts.nagios.logger.get_output',
+            autospec=True)
         self.mock_get_output.return_value = sentinel.output
         self.mock_print_lines = self.patch(
             'pignacio_scripts.nagios.logger.print_lines', autospec=True)
         self.mock_sys_exit = self.patch(
             'pignacio_scripts.nagios.logger.sys.exit', autospec=True)
+        self.mock_empty_to_whitespace = self.patch(
+            'pignacio_scripts.nagios.logger.empty_lines_to_whitespace',
+            autospec=True)
+        self.mock_empty_to_whitespace.return_value = sentinel.whitespace_output
         self.status = LoggerStatus(
             unknown=sentinel.unknown,
             warnings=sentinel.warnings,
@@ -282,7 +300,12 @@ class PrintAndExitTests(TestCase):
             print_and_exit(self.status, sentinel.additional)
         except SystemExit:
             pass
-        self.mock_print_lines.assert_called_once_with(sentinel.output)
+        self.mock_print_lines.assert_called_once_with(
+            sentinel.whitespace_output)
+
+    def test_output_is_whitespaced(self):
+        print_and_exit(self.status, sentinel.additional)
+        self.mock_empty_to_whitespace.assert_called_once_with(sentinel.output)
 
     def test_system_exit_is_not_swallowed(self):
         self.mock_sys_exit.side_effect = iter([SystemExit()])
@@ -293,39 +316,29 @@ class PrintAndExitTests(TestCase):
 class ListMessagesTests(TestCase):
     def setUp(self):
         self.messages = [
-            Message('<message_1>', '<label_1>'),
-            Message('<message_2>', '<label_2>'),
+            '<message_1>',
+            '<message_2>',
         ]
 
-    def test_with_labels(self):
+    def test_two_messages(self):
         self.assertEqual(list_messages(self.messages, '<LABEL>'), [
             '<LABEL> (2):',
-            ' - <label_1>: <message_1>',
-            ' - <label_2>: <message_2>',
+            ' - <message_1>',
+            ' - <message_2>',
             '',
         ])
 
-    def test_with_no_labels(self):
-        self.assertEqual(list_messages(
-            self.messages, '<LABEL>',
-            include_labels=False), [
-                '<LABEL> (2):',
-                ' - <message_1>',
-                ' - <message_2>',
-                '',
-            ])
-
-    def test_with_extra_message(self):
-        self.messages.append(Message('<message_3>', '<label_3>'))
+    def test_three_messages(self):
+        self.messages.append('<message_3>')
         self.assertEqual(list_messages(self.messages, '<LABEL>'), [
             '<LABEL> (3):',
-            ' - <label_1>: <message_1>',
-            ' - <label_2>: <message_2>',
-            ' - <label_3>: <message_3>',
+            ' - <message_1>',
+            ' - <message_2>',
+            ' - <message_3>',
             '',
         ])
 
-    def test_empty_messages(self):
+    def test_no_messages(self):
         self.assertEqual(list_messages([], '<LABEL>'), [])
 
 
@@ -355,24 +368,24 @@ class GetOutputTests(TestCase):
         )
 
     def test_calls_get_first_line(self):
-        get_output(self.status, sentinel.additional)
+        get_output(self.status, 'additional')
         self.mock_get_first_line.assert_called_once_with(self.status, None)
 
     def test_proxies_message(self):
-        get_output(self.status, sentinel.additional, sentinel.message)
+        get_output(self.status, 'additional', sentinel.message)
         self.mock_get_first_line.assert_called_once_with(self.status,
                                                          sentinel.message)
 
     def test_list_messages_calls(self):
-        get_output(self.status, sentinel.additional)
+        get_output(self.status, 'additional')
         self.mock_list_messages.assert_any_call(sentinel.errors, 'ERRORS')
         self.mock_list_messages.assert_any_call(sentinel.warnings, 'WARNINGS')
         self.mock_list_messages.assert_any_call(
-            sentinel.important, 'IMPORTANT', include_labels=False)
+            sentinel.important, 'IMPORTANT')
         self.assertEqual(self.mock_list_messages.call_count, 3)
 
     def test_output_order(self):
-        output = get_output(self.status, sentinel.additional)
+        output = get_output(self.status, 'additional')
         self.assertEqual(output, [
             sentinel.first_line,
             '',
@@ -380,8 +393,12 @@ class GetOutputTests(TestCase):
             sentinel.listed_warnings,
             sentinel.listed_important,
             'Additional info:',
-            sentinel.additional,
+            'additional',
         ])
+
+    def test_additional_is_split(self):
+        output = get_output(self.status, '<additional_1>\n<additional_2>')
+        self.assertEqual(['<additional_1>', '<additional_2>'], output[-2:])
 
 
 class PrintLinesTests(TestCase):
@@ -403,6 +420,20 @@ class PrintLinesTests(TestCase):
                          '<line_1>\n<line_2>\n<line_3>\n')
 
 
+class EmptyLinesToWhitespaceTests(TestCase):
+    def test_empties(self):
+        lines = empty_lines_to_whitespace(['', ''])
+        self.assertSize(lines, 2)
+        for line in lines:
+            self.assertNotEqual(line, '')
+            self.assertEqual(line.strip(), '')
+            self.assertNotIn('\n', line)
+
+    def test_non_empties(self):
+        original = ['line_1', 'line_2']
+        self.assertEqual(empty_lines_to_whitespace(original), original)
+
+
 class NagiosLoggerResetTests(TestCase):
     def setUp(self):
         self.mock_initial = self.patch_object(LoggerStatus, 'initial')
@@ -414,68 +445,121 @@ class NagiosLoggerResetTests(TestCase):
         self.mock_initial.assert_called_once_with()
 
 
+def _guarded_run(func=lambda: None, **kwargs):
+    try:
+        NagiosLogger.run(func, **kwargs)
+    except SystemExit as err:
+        return err
+
+
 class NagiosLoggerRunTests(TestCase):
     def setUp(self):
         self.stdout = self.capture_stdout()
-        self.mock_print_and_exit = self.patch(
-            'pignacio_scripts.nagios.logger.print_and_exit',
-            autospec=True,
-        )
         self.mock_func = Mock(spec=lambda: None)
 
-    def test_stdout_is_captured_in_additional(self):
-        def func():
-            print("<inside>")
+    def test_raises_system_exit(self):
+        self.assertRaises(SystemExit, NagiosLogger.run, lambda: None)
 
-        print('<before>')
-        NagiosLogger.run(func)
+    def test_exits_ok(self):
+        err = _guarded_run()
+        self.assertEqual(err.code, 0)
 
-        self.assertEqual(self.stdout.getvalue(), '<before>\n')
-        self.assertTrue(self.mock_print_and_exit.called)
-        additional = self.mock_print_and_exit.call_args[0][1]
-        self.assertEqual(additional, '<inside>\n')
+    def test_exits_warning(self):
+        err = _guarded_run(lambda: NagiosLogger.warning('A warning'))
+        self.assertEqual(err.code, 1)
 
-    @patch.object(NagiosLogger, 'init')
-    def test_init_is_called(self, mock_init):  # pylint: disable=no-self-use
-        NagiosLogger.run(lambda: None)
-        mock_init.assert_called_once_with(debug=False)
+    def test_exits_critical(self):
+        err = _guarded_run(lambda: NagiosLogger.error('An error'))
+        self.assertEqual(err.code, 2)
 
-    @patch.object(NagiosLogger, 'init')
-    def test_debug_is_proxied(self, mock_init):  # pylint: disable=no-self-use
-        NagiosLogger.run(lambda: None, debug=sentinel.debug)
-        mock_init.assert_called_once_with(debug=sentinel.debug)
+    def test_exits_unknown(self):
+        err = _guarded_run(lambda: NagiosLogger.unknown_stop('reason'))
+        self.assertEqual(err.code, 3)
+
+    @patch('pignacio_scripts.nagios.logger.logging.basicConfig', autospec=True)
+    def test_logging_is_configured_on_info(self, mock_config):
+        _guarded_run()
+        self.assertSoftCalledWith(mock_config, level=logging.INFO)
+
+    @patch('pignacio_scripts.nagios.logger.logging.basicConfig', autospec=True)
+    def test_debug_sets_logging_to_debug(self, mock_config):
+        _guarded_run(debug=True)
+        self.assertSoftCalledWith(mock_config, level=logging.DEBUG)
 
     def test_func_is_called(self):  # pylint: disable=no-self-use
-        NagiosLogger.run(self.mock_func)
-
+        _guarded_run(self.mock_func)
         self.mock_func.assert_called_once_with()
 
-    @patch.object(NagiosLogger, 'unknown_stop')
-    def test_stops_on_system_exit(self, mock_stop):
-        self.mock_func.side_effect = iter([SystemExit()])
+    def test_does_not_output_empty_lines(self):
+        def run():
+            NagiosLogger.important("important\n")
+            for x in xrange(10):
+                print()
+        _guarded_run(run)
 
-        NagiosLogger.run(self.mock_func)
+        lines = self.stdout.getvalue().splitlines()
+        for index, line in enumerate(lines):
+            self.assertNotEqual(line, "", "Line #{} was empty".format(index))
 
-        mock_stop.assert_called_once_with("Premature exit")
 
-    @patch('pignacio_scripts.nagios.logger.traceback.print_exception')
-    @patch('pignacio_scripts.nagios.logger.sys.exc_info')
-    @patch.object(NagiosLogger, 'unknown_stop')
-    def test_stops_on_error(self, mock_stop, mock_exc_info, mock_print_exc):
-        self.mock_func.side_effect = iter([ValueError("MyError")])
-        mock_exc_info.return_value = (IndexError, '<emsg>', sentinel.traceback)
+class NagiosLoggerRunStdoutTests(TestCase):
+    def setUp(self):
+        self.stdout = self.capture_stdout()
 
-        NagiosLogger.run(self.mock_func)
+    def test_contains_stdout(self):
+        def func():
+            print('<stdout>')
 
-        mock_stop.assert_called_once_with(
-            'Exception thrown: IndexError, <emsg>')
-        mock_exc_info.assert_called_once_with()
-        mock_print_exc.assert_called_once_with(
-            IndexError, '<emsg>', sentinel.traceback, file=sys.stdout)
+        _guarded_run(func)
+
+        self.assertIn('<stdout>', self.stdout.getvalue())
+
+    @patch('pignacio_scripts.nagios.logger.get_output', autospec=True)
+    def test_output_reaches_stdout(self, mock_get_output):
+        mock_get_output.return_value = ['<output>']
+        _guarded_run()
+        self.assertIn('<output>', self.stdout.getvalue())
+
+    @patch('pignacio_scripts.nagios.logger.get_first_line', autospec=True)
+    def test_first_line_reaches_stdout(self, mock_get_first_line):
+        mock_get_first_line.return_value = '<first_line>'
+        _guarded_run()
+        self.assertEqual(self.stdout.getvalue().splitlines()[0],
+                         '<first_line>')
+
+    def test_unknown_stop_reaches_stdout(self):
+        _guarded_run(lambda: NagiosLogger.unknown_stop('<stop_reason>'))
+        self.assertIn('<stop_reason>', self.stdout.getvalue())
+
+    def test_run_reads_message_from_function_return(self):
+        _guarded_run(lambda: '<message>')
+        self.assertIn('<message>', self.stdout.getvalue().splitlines()[0])
+
+    def test_catches_and_logs_errors(self):
+        def run():
+            raise ValueError("<value>")
+
+        _guarded_run(run)
+
+        first_line = self.stdout.getvalue().splitlines()[0]
+        self.assertEqual(
+            first_line,
+            'STATUS: UNKNOWN. Exception thrown: ValueError, <value>')
+
+    def test_catches_system_exit(self):
+        def run():
+            sys.exit(255)
+
+        _guarded_run(run)
+
+        first_line = self.stdout.getvalue().splitlines()[0]
+        self.assertEqual(first_line,
+                         'STATUS: UNKNOWN. Premature exit. Code: 255')
 
 
 class NagiosLoggerMessagesTests(TestCase):
     def setUp(self):
+        NagiosLogger.reset()
         self.mock_status = self.patch_object(NagiosLogger, 'status',
                                              autospec=True)
         self.mock_status.add_error.return_value = sentinel.with_error
@@ -483,38 +567,38 @@ class NagiosLoggerMessagesTests(TestCase):
         self.mock_status.add_important.return_value = sentinel.with_important
 
     def test_error(self):
-        NagiosLogger.error(sentinel.message, sentinel.label)
+        NagiosLogger.error(sentinel.message)
 
         self.mock_status.add_error.assert_called_once_with(
-            sentinel.message, sentinel.label)
+            sentinel.message)
         self.assertEqual(NagiosLogger.status, sentinel.with_error)
 
     def test_critical(self):
-        NagiosLogger.critical(sentinel.message, sentinel.label)
+        NagiosLogger.critical(sentinel.message)
 
         self.mock_status.add_error.assert_called_once_with(
-            sentinel.message, sentinel.label)
+            sentinel.message)
         self.assertEqual(NagiosLogger.status, sentinel.with_error)
 
     def test_crit(self):
-        NagiosLogger.crit(sentinel.message, sentinel.label)
+        NagiosLogger.crit(sentinel.message)
 
         self.mock_status.add_error.assert_called_once_with(
-            sentinel.message, sentinel.label)
+            sentinel.message)
         self.assertEqual(NagiosLogger.status, sentinel.with_error)
 
     def test_warning(self):
-        NagiosLogger.warning(sentinel.message, sentinel.label)
+        NagiosLogger.warning(sentinel.message)
 
         self.mock_status.add_warning.assert_called_once_with(
-            sentinel.message, sentinel.label)
+            sentinel.message)
         self.assertEqual(NagiosLogger.status, sentinel.with_warning)
 
     def test_warn(self):
-        NagiosLogger.warn(sentinel.message, sentinel.label)
+        NagiosLogger.warn(sentinel.message)
 
         self.mock_status.add_warning.assert_called_once_with(
-            sentinel.message, sentinel.label)
+            sentinel.message)
         self.assertEqual(NagiosLogger.status, sentinel.with_warning)
 
     def test_important(self):
@@ -530,21 +614,3 @@ class NagiosLoggerMessagesTests(TestCase):
         self.mock_status.add_important.assert_called_once_with(
             sentinel.message)
         self.assertEqual(NagiosLogger.status, sentinel.with_important)
-
-
-class NagiosLoggerUnknownTests(TestCase):
-    def setUp(self):
-        self.mock_status = self.patch_object(NagiosLogger, 'status',
-                                             autospec=True)
-        self.mock_print_and_exit = self.patch(
-            'pignacio_scripts.nagios.logger.print_and_exit',
-            autospec=True)
-
-        self.mock_status.set_unknown.return_value = sentinel.with_unknown
-
-    def test_print_and_exit_is_called(self):
-        NagiosLogger.unknown_stop('<stop_message>')
-
-        self.mock_status.set_unknown.assert_called_once_with()
-        self.mock_print_and_exit.assert_called_once_with(
-            sentinel.with_unknown, '', '<stop_message>')

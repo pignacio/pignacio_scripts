@@ -40,6 +40,7 @@ RESET_ALL = _color_code(0)
 def _color_func(color):
     def func(string):
         return "{}{}{}".format(color, string, RESET_ALL)
+
     return func
 
 

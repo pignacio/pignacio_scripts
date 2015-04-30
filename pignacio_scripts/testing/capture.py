@@ -14,19 +14,19 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library; if not, see <http://www.gnu.org/licenses/>.
-from __future__ import (
-    absolute_import, unicode_literals, division, print_function)
+from __future__ import (absolute_import, unicode_literals, division,
+                        print_function)
 
 import logging
 import sys
 from six import StringIO
-
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class Capturer(object):
     """ Context manager for patching a stream with a ``StringIO`` instance."""
+
     def __init__(self, obj, attribute):
         self._obj = obj
         self._attribute = attribute
@@ -72,8 +72,10 @@ def capture_stdout(func=None):
     if func is None:
         return Capturer(sys, 'stdout')
     else:
+
         def new_func(*args, **kwargs):
             with capture_stdout() as captured:
-                new_args = args + (captured,)
+                new_args = args + (captured, )
                 return func(*new_args, **kwargs)
+
         return new_func

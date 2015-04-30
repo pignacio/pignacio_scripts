@@ -23,12 +23,12 @@ from unittest.util import safe_repr
 from .mock import patch
 from .capture import capture_stdout
 
-
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class TestCase(unittest.TestCase):
     """ Custom TestCase class with additional methods. """
+
     def patch(self, *args, **kwargs):
         """ Patch an object via ``mock.patch``. Automatically cleans up for
         each test. Should be used inside ``setUp``.
@@ -80,6 +80,30 @@ class TestCase(unittest.TestCase):
             return
 
         if size != obj_size:
-            standard_msg = "{}'s size is {} != {}".format(
-                safe_repr(obj), obj_size, size)
+            standard_msg = "{}'s size is {} != {}".format(safe_repr(obj),
+                                                          obj_size, size)
             self.fail(self._formatMessage(msg, standard_msg))
+
+    def assertSoftCalledWith(self, mock, *args,
+                             **kwargs):  # pylint: disable=invalid-name
+        '''Same  as ``self.assertTrue(mock.called)``, with a nicer default
+        message.'''
+        if not mock.called:
+            self.fail('{} was not called.'.format(mock))
+            return
+
+        current_args, current_kwargs = mock.call_args
+
+        if (current_args[:len(args)] != args or
+                not self._is_subdict(kwargs, current_kwargs)):
+            message = ("{} was not called with {}, {}. Current call: "
+                       "{}, {}".format(mock, args, kwargs, current_args,
+                                       current_kwargs))
+            self.fail(message)
+
+    @staticmethod
+    def _is_subdict(subdict, adict):
+        try:
+            return all(v == adict[k] for k, v in subdict.items())
+        except KeyError:
+            return False

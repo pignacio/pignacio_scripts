@@ -17,5 +17,4 @@
 
 from .logger import NagiosLogger
 
-
 __all__ = ['NagiosLogger']

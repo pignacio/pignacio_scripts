@@ -1,4 +1,3 @@
-
 from __future__ import unicode_literals, print_function
 from argparse import ArgumentParser, ArgumentTypeError
 import collections
@@ -7,7 +6,6 @@ import logging
 import os
 import re
 import yaml
-
 
 INCLUDE_RE = r'\s*#include\s+"([^"]*)"'
 HEADER_EXTENSIONS = [".h", ".hpp"]
@@ -34,10 +32,9 @@ class MakefileGeneratorConfig():
         self.compiler = self._get_field("compiler", description="Compiler")
         self.cargs = self._get_field("compiler_args", default="")
         self.source_dir = os.path.normpath(
-            self._get_field("source_dir", description="Sources dir")
-        )
-        self.program = self._get_field("program",
-                                       description="Program name")
+            self._get_field("source_dir",
+                            description="Sources dir"))
+        self.program = self._get_field("program", description="Program name")
         self.compiled_subdir = self._get_field("compiled_subdir",
                                                default=".compiled")
 
@@ -135,6 +132,7 @@ def _get_object_filename(source_path, config):
 def _print_makefile(config, fout):
     def _print(message=""):
         print(message, file=fout)
+
     dependencies = _walk_source_dir(config.source_dir)
     _print("# Automatically generated makefile. DO NOT EDIT BY HAND")
     _print("# Generated on {}".format(datetime.datetime.now()))
