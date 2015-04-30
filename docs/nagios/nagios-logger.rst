@@ -53,9 +53,10 @@ An example showing this features and the basic usage:
     size = get_queue_size()
     NagiosLogger.important('Queue size: {}'.format(size))
     if size > 1000:
-        NagiosLogger.error('Queue size is bigger than 1000', 'QueueSize')
+        NagiosLogger.error('Queue size is bigger than 1000')
     if size > 200:
-        NagiosLogger.warning('Queue size is bigger than 200', 'QueueSize')
+        NagiosLogger.warning('Queue size is bigger than 200')
+    return "This will be shown in the first line if there were no errors"
 
 
   if __name__ == '__main__':

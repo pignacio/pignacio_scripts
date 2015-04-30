@@ -26,10 +26,13 @@ import six
 import sys
 import traceback
 
-Message = collections.namedtuple('Message', ['message', 'label'])
 _LoggerStatus = collections.namedtuple('LoggerStatus',
                                        ['unknown', 'errors', 'warnings',
                                         'important'])
+
+
+class UnknownStop(Exception):
+    pass
 
 
 class LoggerStatus(_LoggerStatus):
@@ -41,21 +44,25 @@ class LoggerStatus(_LoggerStatus):
 
     @classmethod
     def initial(cls):
-        return cls(unknown=False, errors=[], warnings=[], important=[], )
+        return cls(unknown=False, errors=(), warnings=(), important=(), )
 
     def set_unknown(self):
         return self._replace(unknown=True, )
 
-    def add_error(self, message, label):
-        return self._replace(errors=self.errors + [Message(message, label)])
+    @staticmethod
+    def _append_message(message_list, message):
+        return message_list + (message.strip(),)
 
-    def add_warning(self, message, label):
+    def add_error(self, message):
+        return self._replace(errors=self._append_message(self.errors, message))
+
+    def add_warning(self, message):
         return self._replace(
-            warnings=self.warnings + [Message(message, label)])
+            warnings=self._append_message(self.warnings, message))
 
     def add_important(self, message):
         return self._replace(
-            important=self.important + [Message(message, None)])
+            important=self._append_message(self.important, message))
 
     def exit_code(self):
         if self.unknown:
@@ -123,12 +130,12 @@ class NagiosLogger(object):  # pylint: disable=no-init
         cls.original_stdout = None
 
     @classmethod
-    def error(cls, line, label):
-        cls.status = cls.status.add_error(line, label)
+    def error(cls, line):
+        cls.status = cls.status.add_error(line)
 
     @classmethod
-    def warning(cls, line, label):
-        cls.status = cls.status.add_warning(line, label)
+    def warning(cls, line):
+        cls.status = cls.status.add_warning(line)
 
     @classmethod
     def important(cls, line):
@@ -142,25 +149,27 @@ class NagiosLogger(object):  # pylint: disable=no-init
     @classmethod
     def unknown_stop(cls, message):
         cls.status = cls.status.set_unknown()
-        cls._restore_stdout()
-        print_and_exit(cls.status, cls._buffer.getvalue(), message)
+        raise UnknownStop(message)
 
     @classmethod
     def run(cls, func, debug=False):
         cls.init(debug=debug)
         try:
-            func()
+            message = func()
+        except UnknownStop as stop:
+            message = str(stop)
         except Exception:  # pylint: disable=broad-except
             etype, value, trace = sys.exc_info()
             traceback.print_exception(etype, value, trace, file=sys.stdout)
-            cls.unknown_stop("Exception thrown: %s, %s" % (etype.__name__,
-                                                           value))
-        except SystemExit:
+            message = "Exception thrown: %s, %s" % (etype.__name__, value)
+            cls.status = cls.status.set_unknown()
+        except SystemExit as err:
             etype, value, trace = sys.exc_info()
             traceback.print_exception(etype, value, trace, file=sys.stdout)
-            cls.unknown_stop("Premature exit")
+            message = "Premature exit. Code: {}".format(err.code)
+            cls.status = cls.status.set_unknown()
         cls._restore_stdout()
-        print_and_exit(cls.status, cls._buffer.getvalue())
+        print_and_exit(cls.status, cls._buffer.getvalue(), message)
 
 
 def print_lines(lines):
@@ -174,14 +183,13 @@ def print_and_exit(status, additional, message=None):
     sys.exit(status.exit_code())
 
 
-def list_messages(messages, label, include_labels=True):
+def list_messages(messages, label):
     if not messages:
         return []
     lines = []
     lines.append('{} ({}):'.format(label, len(messages)))
     for message in messages:
-        label = '{}: '.format(message.label) if include_labels else ''
-        lines.append(' - {}{}'.format(label, message.message))
+        lines.append(' - {}'.format(message))
     lines.append('')
     return lines
 
@@ -192,8 +200,7 @@ def get_output(status, additional, message=None):
     lines.append('')
     lines.extend(list_messages(status.errors, 'ERRORS'))
     lines.extend(list_messages(status.warnings, 'WARNINGS'))
-    lines.extend(list_messages(status.important, 'IMPORTANT',
-                               include_labels=False))
+    lines.extend(list_messages(status.important, 'IMPORTANT'))
     lines.append('Additional info:')
     lines.extend(additional.splitlines())
     return lines
@@ -214,7 +221,7 @@ STATUS_LABELS = {
 
 def get_first_line(status, message=None):
     return "STATUS: %s. %s" % (STATUS_LABELS[status.exit_code()],
-                               message or get_default_first_line(status))
+                               get_first_line_message(status, message))
 
 
 def join_labels(messages):
@@ -230,8 +237,17 @@ def get_first_line_part(messages, label):
     return '{}s in ({}).'.format(label, join_labels(messages))
 
 
-def get_default_first_line(status):
-    parts = []
-    parts.append(get_first_line_part(status.errors, 'Error'))
-    parts.append(get_first_line_part(status.warnings, 'Warning'))
-    return " ".join(p for p in parts if p)
+def _format_first_line(label, messages):
+    if len(messages) == 1:
+        return "{}: {}.".format(label.capitalize(), messages[0])
+    return "{} {}s (First: {}).".format(len(messages), label, messages[0])
+
+
+def get_first_line_message(status, message=None):
+    if status.unknown:
+        return message or 'Something unexpected happened'
+    if status.errors:
+        return _format_first_line('error', status.errors)
+    elif status.warnings:
+        return _format_first_line('warning', status.warnings)
+    return message or ''
