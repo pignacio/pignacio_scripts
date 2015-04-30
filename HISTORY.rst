@@ -1,7 +1,7 @@
 .. :changelog:
 
 History
--------
+#######
 
 0.0.2 (in-development)
 ----------------------
