@@ -48,6 +48,8 @@ def namedtuple_with_defaults(tuple_name, fields, defaults=None):
 
     # pylint: disable=no-init,too-few-public-methods
     class NamedTuple(tuple_class):
+        __slots__ = ()
+
         # Magic: this also works as expected with dicts
         __defaults = staticmethod(defaults)
 

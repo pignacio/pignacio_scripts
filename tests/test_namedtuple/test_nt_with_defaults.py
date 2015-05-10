@@ -68,6 +68,15 @@ class NamedtupleWithDefaultsTest(TestCase):
             self.tuple_class,
             sentinel.a, sentinel.b, sentinel.c, sentinel.d)
 
+    def test_cant_add_attributes(self):
+        value = self.tuple_class(1, 2, 3)
+        with self.assertRaises(AttributeError):
+            value.non_existing = 4
+
+    def test_underscore_dict_works(self):
+        value = self.tuple_class(1, 2, 3)
+        self.assertDictEqual(value.__dict__, {'a': 1, 'b': 2, 'c': 3})
+
 
 class LambdaDefaultsTest(TestCase):
     def setUp(self):
