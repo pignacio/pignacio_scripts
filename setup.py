@@ -17,7 +17,7 @@ requirements = [
 
 setup(
     name='pignacio_scripts',
-    version='0.0.3-dev',
+    version='0.0.3',
     description="Reusable python scripts and snippets I find useful",
     long_description=readme + '\n\n' + history,
     author="Ignacio Rossi",

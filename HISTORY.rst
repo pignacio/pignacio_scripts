@@ -3,8 +3,8 @@
 History
 #######
 
-0.0.3 (In development)
-----------------------
+0.0.3 (2015-05-10)
+------------------
 
 * FIX: setup.py correctly sets packages now. Updated makefile.
 
