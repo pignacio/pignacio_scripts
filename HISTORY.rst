@@ -6,6 +6,9 @@ History
 0.0.3 (In development)
 ----------------------
 
+* Setting empty ``__slots__`` on ``namedtuple_with_defaults``. This fixes
+  ``__dict__`` and reduces memory usage.
+
 0.0.2 (2015-04-30)
 ------------------
 
