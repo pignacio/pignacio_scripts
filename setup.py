@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals, division
 
-
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 with open('README.rst') as readme_file:
@@ -18,23 +15,15 @@ requirements = [
     'six',
 ]
 
-test_requirements = [
-    # TODO: put package test requirements here
-]
-
 setup(
     name='pignacio_scripts',
-    version='0.0.2',
+    version='0.0.3',
     description="Reusable python scripts and snippets I find useful",
     long_description=readme + '\n\n' + history,
     author="Ignacio Rossi",
     author_email='rossi.ignacio@gmail.com ',
     url='https://github.com/pignacio/pignacio_scripts',
-    packages=[
-        'pignacio_scripts',
-    ],
-    package_dir={'pignacio_scripts':
-                 'pignacio_scripts'},
+    packages=find_packages(exclude=['contrib', 'test*', 'docs']),
     include_package_data=True,
     install_requires=requirements,
     license='LGPLv2.1',
@@ -52,5 +41,4 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     test_suite='tests',
-    tests_require=test_requirements
 )

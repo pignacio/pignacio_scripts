@@ -3,6 +3,14 @@
 History
 #######
 
+0.0.3 (2015-05-10)
+------------------
+
+* FIX: setup.py correctly sets packages now. Updated makefile.
+
+* Setting empty ``__slots__`` on ``namedtuple_with_defaults``. This fixes
+  ``__dict__`` and reduces memory usage.
+
 0.0.2 (2015-04-30)
 ------------------
 
