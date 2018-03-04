@@ -2,11 +2,11 @@
 pignacio's scripts
 ==================
 
-.. image:: https://pypip.in/version/pignacio_scripts/badge.svg?style=flat
+.. image:: https://img.shields.io/pypi/v/pignacio_scripts.svg?style=flat
     :target: https://pypi.python.org/pypi/pignacio_scripts/
     :alt: Latest version
 
-.. image:: https://pypip.in/py_versions/pignacio_scripts/badge.svg?style=flat
+.. image:: https://img.shields.io/pypi/pyversions/pignacio_scripts.svg?style=flat
     :target: https://pypi.python.org/pypi/pignacio_scripts/
     :alt: Supported Python versions
 
@@ -16,7 +16,7 @@ pignacio's scripts
 .. image:: https://coveralls.io/repos/pignacio/pignacio_scripts/badge.svg?branch=master
     :target: https://coveralls.io/r/pignacio/pignacio_scripts?branch=master
 
-.. image:: https://pypip.in/license/pignacio_scripts/badge.svg?style=flat
+.. image:: https://img.shields.io/pypi/l/pignacio_scripts.svg?style=flat
     :target: https://pypi.python.org/pypi/pignacio_scripts/
     :alt: License
 
